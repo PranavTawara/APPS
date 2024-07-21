@@ -3,6 +3,8 @@ const router = express.Router();
 const { Policyholder, Policy, Claim } = require('../models/models');
 const moment = require('moment');
 const { registerUser, loginUser } = require('../controllers/authController');
+const authenticateToken = require('../middleware/authMiddleware');
+
 
 // Middleware to parse JSON bodies
 router.use(express.json());
@@ -156,9 +158,8 @@ router.post('/login', loginUser);
 
 
 
-
 // Routes for Policyholders
-router.post('/policyholders', async (req, res) => {
+router.post('/policyholders', authenticateToken, async (req, res) => {
   try {
     const existingPolicyholder = await Policyholder.findOne({ policyholderId: req.body.policyholderId });
 
@@ -176,7 +177,7 @@ router.post('/policyholders', async (req, res) => {
   }
 });
 
-router.get('/policyholders', async (req, res) => {
+router.get('/policyholders', authenticateToken, async (req, res) => {
   try {
     const allPolicyholders = await getAllPolicyholders();
     res.send(allPolicyholders);
@@ -185,7 +186,7 @@ router.get('/policyholders', async (req, res) => {
   }
 });
 
-router.get('/policyholders/:id', async (req, res) => {
+router.get('/policyholders/:id', authenticateToken, async (req, res) => {
   const policyholderId = req.params.id;
   try {
     const policyholder = await Policyholder.findOne({ policyholderId });
@@ -200,7 +201,7 @@ router.get('/policyholders/:id', async (req, res) => {
 });
 
 // Update policyholder
-router.put('/policyholders/:id', async (req, res) => {
+router.put('/policyholders/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -227,7 +228,7 @@ router.put('/policyholders/:id', async (req, res) => {
 });
 
 // Delete policyholder
-router.delete('/policyholders/:policyholderId', async (req, res) => {
+router.delete('/policyholders/:policyholderId', authenticateToken, async (req, res) => {
   try {
     const policyholder = await Policyholder.findOneAndDelete({ policyholderId: req.params.policyholderId });
     if (!policyholder) {
@@ -241,7 +242,7 @@ router.delete('/policyholders/:policyholderId', async (req, res) => {
 });
 
 // Routes for Policies
-router.post('/policies', async (req, res) => {
+router.post('/policies', authenticateToken, async (req, res) => {
   const policy = req.body;
   try {
     const newPolicy = await createPolicy(policy);
@@ -251,7 +252,7 @@ router.post('/policies', async (req, res) => {
   }
 });
 
-router.get('/policies', async (req, res) => {
+router.get('/policies', authenticateToken, async (req, res) => {
   try {
     const allPolicies = await getAllPolicies();
     res.send(allPolicies);
@@ -260,7 +261,7 @@ router.get('/policies', async (req, res) => {
   }
 });
 
-router.get('/policies/:id', async (req, res) => {
+router.get('/policies/:id', authenticateToken, async (req, res) => {
   const policyId = req.params.id;
   try {
     const policy = await Policy.findOne({ policyId });
@@ -274,7 +275,7 @@ router.get('/policies/:id', async (req, res) => {
   }
 });
 
-router.put('/policies/:id', async (req, res) => {
+router.put('/policies/:id', authenticateToken, async (req, res) => {
   const policyId = req.params.id;
   const updatedData = req.body;
   try {
@@ -285,7 +286,7 @@ router.put('/policies/:id', async (req, res) => {
   }
 });
 
-router.delete('/policies/:id', async (req, res) => {
+router.delete('/policies/:id', authenticateToken, async (req, res) => {
   const policyId = req.params.id;
   try {
     await deletePolicy(policyId);
@@ -296,7 +297,7 @@ router.delete('/policies/:id', async (req, res) => {
 });
 
 // Routes for Claims
-router.post('/claims', async (req, res) => {
+router.post('/claims', authenticateToken, async (req, res) => {
   const claim = req.body;
   try {
     const newClaim = await createClaim(claim);
@@ -306,7 +307,7 @@ router.post('/claims', async (req, res) => {
   }
 });
 
-router.get('/claims', async (req, res) => {
+router.get('/claims', authenticateToken, async (req, res) => {
   try {
     const allClaims = await getAllClaims();
     res.send(allClaims);
@@ -315,7 +316,7 @@ router.get('/claims', async (req, res) => {
   }
 });
 
-router.get('/claims/:id', async (req, res) => {
+router.get('/claims/:id', authenticateToken, async (req, res) => {
   const claimId = req.params.id;
   try {
     const claim = await Claim.findOne({ claimId });
@@ -329,7 +330,7 @@ router.get('/claims/:id', async (req, res) => {
   }
 });
 
-router.put('/claims/:id', async (req, res) => {
+router.put('/claims/:id', authenticateToken, async (req, res) => {
   const claimId = req.params.id;
   const updatedData = req.body;
   try {
@@ -340,7 +341,7 @@ router.put('/claims/:id', async (req, res) => {
   }
 });
 
-router.delete('/claims/:id', async (req, res) => {
+router.delete('/claims/:id', authenticateToken, async (req, res) => {
   const claimId = req.params.id;
   try {
     await deleteClaim(claimId);
